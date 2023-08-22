@@ -21,18 +21,21 @@ function register_custom_auth_api_endpoint() {
 }
 
 function custom_auth_api_login($request) {
-    $username = $request->get_param('username');
-    $password = $request->get_param('password');
-
     
-    $user = wp_authenticate($username, $password);
 
-    if (is_wp_error($user)) {
-        return array('error' => 'Invalid');
-    }
+}
+// Add this code to your plugin file
+add_action('rest_api_init', 'register_custom_nonce_api_endpoint');
 
-    $token = '6sh#Ekljsh'; 
-    return array('token' => $token);
- 
+function register_custom_nonce_api_endpoint() {
+    register_rest_route('custom-auth-api/v1', '/nonce', array(
+        'methods' => 'GET',
+        'callback' => 'generate_custom_nonce',
+    ));
+}
+
+function generate_custom_nonce() {
+    $nonce = wp_create_nonce('custom-auth-api-nonce');
+    return rest_ensure_response(array('nonce' => $nonce));
 }
 
